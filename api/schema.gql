@@ -1,0 +1,25 @@
+type CodeSnippetNode {
+    lang: String
+    langSlug: String
+    code: String
+}
+type QuestionNode {
+    questionId: Int
+    questionFrontendId: Int
+    title: String
+    titleSlug: String
+    codeSnippets: [CodeSnippetNode]
+    content: String
+    exampleTestcases: String
+}
+type Query {
+    question(titleSlug: String!) : QuestionNode
+}
+type Mutation {
+    question(titleSlug: String!) : QuestionNode
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}

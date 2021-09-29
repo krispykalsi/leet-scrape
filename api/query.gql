@@ -1,0 +1,11 @@
+query($titleSlug: String!) {
+    question(titleSlug: $titleSlug) {
+        titleSlug
+        content
+        codeSnippets {
+            lang
+            langSlug
+            code
+        }
+    }
+}
