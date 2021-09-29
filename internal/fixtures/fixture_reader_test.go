@@ -1,15 +1,16 @@
-package api
+package fixtures
 
 import (
+	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetQuestionFromFixture(t *testing.T) {
-	expected := Question{
+	expected := model.Question{
 		TitleSlug: "convert-sorted-array-to-binary-search-tree",
 		Content:   "<p>Given an integer array <code>nums</code> where the elements are sorted in <strong>ascending order</strong>, convert <em>it to a <strong>height-balanced</strong> binary search tree</em>.</p>\n\n<p>A <strong>height-balanced</strong> binary tree is a binary tree in which the depth of the two subtrees of every node never differs by more than one.</p>\n\n<p>&nbsp;</p>\n<p><strong>Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/18/btree1.jpg\" style=\"width: 302px; height: 222px;\" />\n<pre>\n<strong>Input:</strong> nums = [-10,-3,0,5,9]\n<strong>Output:</strong> [0,-3,9,-10,null,5]\n<strong>Explanation:</strong> [0,-10,5,null,-3,null,9] is also accepted:\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/18/btree2.jpg\" style=\"width: 302px; height: 222px;\" />\n</pre>\n\n<p><strong>Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/02/18/btree.jpg\" style=\"width: 342px; height: 142px;\" />\n<pre>\n<strong>Input:</strong> nums = [1,3]\n<strong>Output:</strong> [3,1]\n<strong>Explanation:</strong> [1,3] and [3,1] are both a height-balanced BSTs.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>nums</code> is sorted in a <strong>strictly increasing</strong> order.</li>\n</ul>\n",
-		CodeSnippets: []CodeSnippet{
+		CodeSnippets: []model.CodeSnippet{
 			{
 				Lang:     "C++",
 				LangSlug: "cpp",
@@ -102,7 +103,7 @@ func TestGetQuestionFromFixture(t *testing.T) {
 			},
 		},
 	}
-	actual, err := GetQuestionFromFixture("convert_sorted_array_to_binary_search_tree.json")
+	actual, err := ImportFromFile("convert_sorted_array_to_binary_search_tree.json")
 	assert.Nil(t, err)
 	assert.Equal(t, expected, actual)
 }

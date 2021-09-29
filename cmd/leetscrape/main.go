@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/ISKalsi/ltdl/v2/api"
-	"github.com/ISKalsi/ltdl/v2/internal/errors"
+	"github.com/ISKalsi/leet-scrape/v2/api"
+	"github.com/ISKalsi/leet-scrape/v2/data/repo"
+	"github.com/ISKalsi/leet-scrape/v2/domain/usecase"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -57,24 +58,11 @@ func main() {
 			boilerplate := c.String(BOILERPLATE)
 			path := c.String(LOCATION)
 
-			var err error
-			var question *api.Question
-
-			if url != "" {
-				question, err = getQuestionByUrl(url)
-			} else if num != -1 {
-
-			} else if name != "" {
-				question, err = getQuestionByName(name)
-			} else {
-				handleError(errors.FlagMissing)
-			}
-			handleError(err)
-
-			err = makeFileFromQuestionData(boilerplate, question, path)
+			s := repo.NewScrapper(api.SolutionPart)
+			uc := usecase.NewMakeSolutionFileUseCase(s, num, url, name)
+			err := uc.FromQuestionData(boilerplate, path)
 			if err != nil {
-				handleError(errors.FileGeneration)
-				log.Println(err)
+				handleError(err)
 			}
 			return nil
 		},

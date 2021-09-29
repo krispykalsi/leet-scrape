@@ -1,4 +1,4 @@
-package api
+package model
 
 type CodeSnippet struct {
 	Lang     string `json:"lang"`

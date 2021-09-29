@@ -7,7 +7,11 @@ const (
 	FileGeneration
 	QuestionNotFound
 	Unexpected
+	NotImplemented
+	NoCodeSnippetsFound
 )
+
+const repoUrl = "https://github.com/ISKalsi/leet-scrape"
 
 type Error int
 
@@ -32,8 +36,10 @@ func (e Error) GetMessage(cli string) string {
 	case QuestionNotFound:
 		return "Question not found. Please check the spellings."
 	case Unexpected:
-		return "This was not supposed to happen. Please raise an issue on the Github repo - https://github.com/ISKalsi/leetscrape"
+		return "This was not supposed to happen. Please raise an issue on the Github repo - " + repoUrl
+	case NotImplemented:
+		return "This feature is yet to be implemented. Keep track on " + repoUrl
 	default:
-		return "I was not prepared for this (>.<) Please raise an issue on the Github repo - https://github.com/ISKalsi/leetscrape"
+		return "I was not prepared for this (>.<) Please raise an issue on the Github repo - " + repoUrl
 	}
 }
