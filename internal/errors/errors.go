@@ -9,6 +9,7 @@ const (
 	Unexpected
 	NotImplemented
 	NoCodeSnippetsFound
+	BadAppCommand
 )
 
 const repoUrl = "https://github.com/ISKalsi/leet-scrape"
@@ -16,7 +17,7 @@ const repoUrl = "https://github.com/ISKalsi/leet-scrape"
 type Error int
 
 func (e Error) Error() string {
-	return e.GetMessage("")
+	return e.GetMessage("leetscrape")
 }
 
 func (e Error) GetCode() int {
@@ -35,11 +36,15 @@ func (e Error) GetMessage(cli string) string {
 		return "Something went wrong during the generation of solution template file"
 	case QuestionNotFound:
 		return "Question not found. Please check the spellings."
+	case NoCodeSnippetsFound:
+		return "No code snippets found. Are you sure you entered the right command ? (\"" + cli + " sol\" and not \"leetscrape ques\")"
+	case BadAppCommand:
+		return "Internal error. Bad app command"
 	case Unexpected:
 		return "This was not supposed to happen. Please raise an issue on the Github repo - " + repoUrl
 	case NotImplemented:
 		return "This feature is yet to be implemented. Keep track on " + repoUrl
 	default:
-		return "I was not prepared for this (>.<) Please raise an issue on the Github repo - " + repoUrl
+		return "!!! I was not prepared for this (>.<) Please raise an issue on the Github repo - " + repoUrl
 	}
 }
