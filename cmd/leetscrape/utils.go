@@ -5,17 +5,17 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func exitCli(err errors.Error) {
-	cli.HandleExitCoder(cli.Exit(err.GetMessage(CliName), err.GetCode()))
+func handleError(err errors.Error) cli.ExitCoder {
+	return cli.Exit(err.GetMessage(CliName), err.GetCode())
 }
 
-func handleError(err error) {
-	if err != nil {
-		switch e := err.(type) {
-		case errors.Error:
-			exitCli(e)
-		default:
-			exitCli(errors.Unexpected)
-		}
+func exitCli(err error) cli.ExitCoder {
+	switch e := err.(type) {
+	case errors.Error:
+		return handleError(e)
+	case nil:
+		return nil
+	default:
+		return handleError(errors.Unexpected)
 	}
 }
