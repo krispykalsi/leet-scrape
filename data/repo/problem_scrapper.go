@@ -5,8 +5,10 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/api"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
+	"github.com/gocolly/colly/v2"
 	"github.com/machinebox/graphql"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -70,6 +72,31 @@ func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
 	}
 }
 
-func (s *ProblemScrapper) GetByNumber(_ int) (*model.Question, error) {
-	return nil, errors.NotImplemented
+func (s *ProblemScrapper) GetByNumber(num int) (*model.Question, error) {
+	c := colly.NewCollector(
+		colly.AllowedDomains("leetcode.com"),
+	)
+
+	var problemSubdirectories []string
+	elementSelector := "a.h-5.truncate.hover\\:text-primary-s.dark\\:hover\\:text-dark-primary-s"
+	c.OnHTML(elementSelector, func(e *colly.HTMLElement) {
+		subdirectory := e.Attr("href")
+		problemSubdirectories = append(problemSubdirectories, subdirectory)
+	})
+	err := c.Visit("https://leetcode.com/problemset/all/?search=" + strconv.Itoa(num) + "&page=1")
+	if err != nil {
+		return nil, err
+	}
+	c.Wait()
+
+	if len(problemSubdirectories) == 0 {
+		return nil, errors.QuestionNotFound
+	}
+	problemUrl := "leetcode.com" + problemSubdirectories[0]
+	q, err := s.GetByUrl(problemUrl)
+	if err != nil {
+		return nil, err
+	} else {
+		return q, nil
+	}
 }
