@@ -1,4 +1,4 @@
-package usecase
+package util
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -8,6 +8,6 @@ import (
 func TestFixNewLine(t *testing.T) {
 	testString := `hello\n world\r\n this is sparta!\r`
 	expected := "hello\n world\r\n this is sparta!\r"
-	actual := fixNewline(testString)
+	actual := FixNewline(testString)
 	assert.Equal(t, expected, actual)
 }

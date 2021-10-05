@@ -9,7 +9,8 @@ const (
 	Unexpected
 	NotImplemented
 	NoCodeSnippetsFound
-	LanguageNotFound
+	ExtensionNotFound
+	SnippetNotFoundInGivenLang
 	BadAppCommand
 	InvalidSearchMethod
 )
@@ -40,7 +41,9 @@ func (e Error) GetMessage(cli string) string {
 		return "Question not found. Please check the spellings."
 	case NoCodeSnippetsFound:
 		return "No code snippets found. Are you sure you entered the right command ? (\"" + cli + " sol\" and not \"leetscrape ques\")"
-	case LanguageNotFound:
+	case SnippetNotFoundInGivenLang:
+		return "Couldn't find the code snippet in your programming language. There could be 2 reasons -\n1. Spelling mistake. Generally available options: C++, C, C#, Kotlin, Java, Python, Python3, Swift, Go, PHP, Racket, Rust, Ruby, JavaScript, TypeScript, Scala, ErLang, Elixir\n2. Snippet is not available on leetcode in your programming language"
+	case ExtensionNotFound:
 		return "Couldn't find the code snippet in your programming language. There could be 2 reasons -\n1. Spelling mistake. Generally available options: C++, C, C#, Kotlin, Java, Python, Python3, Swift, Go, PHP, Racket, Rust, Ruby, JavaScript, TypeScript, Scala, ErLang, Elixir\n2. Snippet is not available on leetcode in your programming language"
 	case InvalidSearchMethod:
 		return "Problem with the search medium. Neither name, url nor number"

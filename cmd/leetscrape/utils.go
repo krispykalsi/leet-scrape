@@ -25,7 +25,7 @@ func exitCli(err error) cli.ExitCoder {
 }
 
 func getQuestion(args *flagArgs) (*model.Question, error) {
-	s := repo.NewScrapper(api.SolutionPart)
+	s := repo.NewProblemScrapper(api.SolutionPart)
 
 	var getProblem *usecase.GetProblem
 	if args.url != "" {

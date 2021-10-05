@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ISKalsi/leet-scrape/v2/data/service"
 	"github.com/ISKalsi/leet-scrape/v2/domain/usecase"
 	"github.com/urfave/cli/v2"
 )
@@ -15,7 +16,9 @@ var question = &cli.Command{
 		if err != nil {
 			return exitCli(err)
 		}
-		generateFile := usecase.NewGenerateQuestionFile(ques, args.path)
+		fw := service.NewFileWriter()
+		id := service.NewImageDownloader()
+		generateFile := usecase.NewGenerateQuestionFile(ques, args.path, fw, id)
 		err = generateFile.Execute()
 		if err != nil {
 			return exitCli(err)

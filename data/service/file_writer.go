@@ -1,20 +1,20 @@
-package usecase
+package service
 
 import (
 	"fmt"
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-type generateFile struct {
-	question *model.Question
-	path     string
+type FileWriter struct{}
+
+func NewFileWriter() *FileWriter {
+	return &FileWriter{}
 }
 
-func (uc *generateFile) writeDataToFile(fName string, data string) error {
-	f, err := os.OpenFile(filepath.Join(uc.path, fName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func (fw *FileWriter) WriteDataToFile(fName string, path string, data string) error {
+	f, err := os.OpenFile(filepath.Join(path, fName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

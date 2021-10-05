@@ -5,6 +5,7 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/api"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
+	"github.com/ISKalsi/leet-scrape/v2/internal/util"
 	"github.com/gocolly/colly/v2"
 	"github.com/machinebox/graphql"
 	"regexp"
@@ -20,12 +21,12 @@ type ProblemScrapper struct {
 	problemPart api.PartOfProblem
 }
 
-func NewScrapper(problemPart api.PartOfProblem) *ProblemScrapper {
+func NewProblemScrapper(problemPart api.PartOfProblem) *ProblemScrapper {
 	return &ProblemScrapper{problemPart}
 }
 
 func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
-	nameSlug := convertToSlug(name)
+	nameSlug := util.ConvertToSlug(name)
 	client := graphql.NewClient(ApiUrl)
 	query := api.GetQuery(s.problemPart)
 

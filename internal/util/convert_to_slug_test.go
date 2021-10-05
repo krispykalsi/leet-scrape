@@ -1,4 +1,4 @@
-package repo
+package util
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func TestConvertToSlug(tt *testing.T) {
 	}
 	for _, testString := range testStrings {
 		tt.Run(testString.name, func(t *testing.T) {
-			actualSlug := convertToSlug(testString.normal)
+			actualSlug := ConvertToSlug(testString.normal)
 			assert.Equal(t, testString.expectedSlug, actualSlug)
 		})
 	}

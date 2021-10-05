@@ -2,24 +2,27 @@ package usecase
 
 import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/service"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
+	"github.com/ISKalsi/leet-scrape/v2/internal/util"
 	"strings"
 )
 
 type GenerateSolutionFile struct {
-	generateFile
-	boilerplate  string
-	requiredLang string
+	writer      service.FileWriter
+	question    *model.Question
+	path        string
+	boilerplate string
+	language    string
 }
 
-func NewGenerateSolutionFile(q *model.Question, path string, boilerplate string, lang string) *GenerateSolutionFile {
+func NewGenerateSolutionFile(q *model.Question, w service.FileWriter, path string, boilerplate string, lang string) *GenerateSolutionFile {
 	return &GenerateSolutionFile{
-		generateFile: generateFile{
-			path:     path,
-			question: q,
-		},
-		boilerplate:  boilerplate,
-		requiredLang: lang,
+		writer:      w,
+		question:    q,
+		path:        path,
+		boilerplate: boilerplate,
+		language:    lang,
 	}
 }
 
@@ -29,13 +32,38 @@ func (uc *GenerateSolutionFile) Execute() error {
 	}
 
 	for _, snippet := range uc.question.CodeSnippets {
-		if strings.ToLower(snippet.Lang) == strings.ToLower(uc.requiredLang) {
+		if strings.ToLower(snippet.Lang) == strings.ToLower(uc.language) {
 			data := uc.boilerplate + snippet.Code
-			data = fixNewline(data)
+			data = util.FixNewline(data)
 
-			fileName := uc.question.TitleSlug + "." + fileExtensions[snippet.Lang]
-			return uc.writeDataToFile(fileName, data)
+			ext := fileExtensions[snippet.Lang]
+			if ext == "" {
+				return errors.ExtensionNotFound
+			}
+			fileName := uc.question.TitleSlug + "." + ext
+			return uc.writer.WriteDataToFile(fileName, uc.path, data)
 		}
 	}
-	return errors.LanguageNotFound
+	return errors.SnippetNotFoundInGivenLang
+}
+
+var fileExtensions = map[string]string{
+	"C++":        "cpp",
+	"Java":       "java",
+	"Python":     "py",
+	"Python3":    "py",
+	"C":          "c",
+	"C#":         "c",
+	"JavaScript": "js",
+	"Ruby":       "rb",
+	"Swift":      "swift",
+	"Go":         "golang",
+	"Scala":      "scala",
+	"Kotlin":     "kt",
+	"Rust":       "rs",
+	"PHP":        "php",
+	"TypeScript": "ts",
+	"Racket":     "rkt",
+	"ErLang":     "erl",
+	"Elixir":     "ex",
 }

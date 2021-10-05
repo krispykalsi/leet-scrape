@@ -1,11 +1,11 @@
-package repo
+package util
 
 import (
 	"regexp"
 	"strings"
 )
 
-func convertToSlug(s string) string {
+func ConvertToSlug(s string) string {
 	trailingWhitespaceRemoved := strings.Trim(s, " ")
 	allLowerCase := strings.ToLower(trailingWhitespaceRemoved)
 	midWordWhitespace := regexp.MustCompile(`\s+`)

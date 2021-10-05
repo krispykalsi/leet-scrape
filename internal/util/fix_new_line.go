@@ -1,10 +1,10 @@
-package usecase
+package util
 
 import (
 	"regexp"
 )
 
-func fixNewline(s string) string {
+func FixNewline(s string) string {
 	carriageReturn := regexp.MustCompile(`\\r`)
 	newLine := regexp.MustCompile(`\\n`)
 	s = carriageReturn.ReplaceAllString(s, "\r")
