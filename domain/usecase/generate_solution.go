@@ -34,7 +34,7 @@ func (uc *GenerateSolutionFile) Execute() error {
 	for _, snippet := range uc.question.CodeSnippets {
 		if strings.ToLower(snippet.Lang) == strings.ToLower(uc.language) {
 			data := uc.boilerplate + snippet.Code
-			data = util.FixNewline(data)
+			data = util.FixNewlineAndTabs(data)
 
 			ext := fileExtensions[snippet.Lang]
 			if ext == "" {

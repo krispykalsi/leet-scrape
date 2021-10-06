@@ -1,5 +1,5 @@
 package service
 
 type ImageDownloader interface {
-	DownloadImageFromUrl(url string) error
+	DownloadImageFromUrl(fName string, path string, url string) error
 }

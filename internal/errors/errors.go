@@ -13,6 +13,9 @@ const (
 	SnippetNotFoundInGivenLang
 	BadAppCommand
 	InvalidSearchMethod
+	FailedToWriteImage
+	FailedToCreateDirectory
+	FailedToDownloadImage
 )
 
 const repoUrl = "https://github.com/ISKalsi/leet-scrape"
@@ -49,6 +52,12 @@ func (e Error) GetMessage(cli string) string {
 		return "Problem with the search medium. Neither name, url nor number"
 	case BadAppCommand:
 		return "Internal error. Bad app command"
+	case FailedToWriteImage:
+		return "Failed to write image asset to file"
+	case FailedToDownloadImage:
+		return "Failed to download image asset"
+	case FailedToCreateDirectory:
+		return "Failed to create folders for the given path. Try executing the command with administrator privileges"
 	case Unexpected:
 		return "This was not supposed to happen. Please raise an issue on the Github repo - " + repoUrl
 	case NotImplemented:

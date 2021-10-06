@@ -14,7 +14,7 @@ func NewFileWriter() *FileWriter {
 }
 
 func (fw *FileWriter) WriteDataToFile(fName string, path string, data string) error {
-	f, err := os.OpenFile(filepath.Join(path, fName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(filepath.Join(path, fName), os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -28,6 +28,7 @@ func (fw *FileWriter) WriteDataToFile(fName string, path string, data string) er
 	_, err = f.WriteString(data)
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
 	fmt.Println("Created file " + fName + " successfully")
 	return nil
