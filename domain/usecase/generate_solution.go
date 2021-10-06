@@ -53,7 +53,7 @@ var fileExtensions = map[string]string{
 	"Python":     "py",
 	"Python3":    "py",
 	"C":          "c",
-	"C#":         "c",
+	"C#":         "cs",
 	"JavaScript": "js",
 	"Ruby":       "rb",
 	"Swift":      "swift",
