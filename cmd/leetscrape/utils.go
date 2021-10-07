@@ -1,10 +1,13 @@
 package main
 
 import (
+	"github.com/ISKalsi/leet-scrape/v2/api"
+	"github.com/ISKalsi/leet-scrape/v2/data/datasource"
 	"github.com/ISKalsi/leet-scrape/v2/data/repo"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/domain/usecase"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
+	"github.com/machinebox/graphql"
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,7 +27,9 @@ func exitCli(err error) cli.ExitCoder {
 }
 
 func getQuestion(args *flagArgs) (*model.Question, error) {
-	s := repo.NewProblemScrapper()
+	c := graphql.NewClient(api.GraphqlApiUrl)
+	a := datasource.NewGraphQLApiImpl(c)
+	s := repo.NewProblemScrapper(a)
 
 	var getProblem *usecase.GetProblem
 	if args.url != "" {

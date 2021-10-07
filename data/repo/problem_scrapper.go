@@ -1,34 +1,26 @@
 package repo
 
 import (
-	"context"
-	"github.com/ISKalsi/leet-scrape/v2/api"
+	"github.com/ISKalsi/leet-scrape/v2/data/datasource"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/util"
-	"github.com/machinebox/graphql"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-type ProblemScrapper struct{}
+type ProblemScrapper struct {
+	api datasource.GraphQLApi
+}
 
-func NewProblemScrapper() *ProblemScrapper {
-	return &ProblemScrapper{}
+func NewProblemScrapper(c datasource.GraphQLApi) *ProblemScrapper {
+	return &ProblemScrapper{api: c}
 }
 
 func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
 	nameSlug := util.ConvertToSlug(name)
-	client := graphql.NewClient(api.GraphqlApiUrl)
-	query := api.GetQuery(api.Question)
-
-	req := graphql.NewRequest(query)
-	req.Var("titleSlug", nameSlug)
-	req.Header.Set("Content-Type", "application/json")
-
-	var q api.QuestionQuery
-	err := client.Run(context.Background(), req, &q)
+	response, err := s.api.FetchBySlug(nameSlug)
 	if err != nil {
 		if strings.Contains(err.Error(), "query does not exist") {
 			return nil, errors.QuestionNotFound
@@ -36,8 +28,7 @@ func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
 			return nil, err
 		}
 	}
-
-	return &q.Question, nil
+	return &response.Question, nil
 }
 
 func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
@@ -67,30 +58,16 @@ func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
 }
 
 func (s *ProblemScrapper) GetByNumber(num int) (*model.Question, error) {
-	client := graphql.NewClient(api.GraphqlApiUrl)
-	query := api.GetQuery(api.QuestionList)
-
 	numString := strconv.Itoa(num)
-
-	req := graphql.NewRequest(query)
-	req.Var("categorySlug", "")
-	req.Var("limit", 1)
-	req.Var("skip", 0)
-	req.Var("filters", map[string]string{
-		"searchKeywords": numString,
-	})
-	req.Header.Set("Content-Type", "application/json")
-
-	var q api.QuestionListQuery
-	err := client.Run(context.Background(), req, &q)
+	response, err := s.api.FetchByNumber(numString)
 	if err != nil {
 		return nil, err
 	}
 
-	if q.QuestionList.TotalNum == 0 {
+	if response.QuestionList.TotalNum == 0 {
 		return nil, errors.QuestionIdOutOfRange
 	} else {
-		ques := q.QuestionList.Data[0]
+		ques := response.QuestionList.Data[0]
 		if ques.Id != numString {
 			return nil, errors.QuestionIdOutOfRange
 		} else {
