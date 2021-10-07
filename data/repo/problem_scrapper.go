@@ -6,35 +6,28 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/util"
-	"github.com/gocolly/colly/v2"
 	"github.com/machinebox/graphql"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
-const (
-	ApiUrl = "https://leetcode.com/graphql"
-)
+type ProblemScrapper struct{}
 
-type ProblemScrapper struct {
-	problemPart api.PartOfProblem
-}
-
-func NewProblemScrapper(problemPart api.PartOfProblem) *ProblemScrapper {
-	return &ProblemScrapper{problemPart}
+func NewProblemScrapper() *ProblemScrapper {
+	return &ProblemScrapper{}
 }
 
 func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
 	nameSlug := util.ConvertToSlug(name)
-	client := graphql.NewClient(ApiUrl)
-	query := api.GetQuery(s.problemPart)
+	client := graphql.NewClient(api.GraphqlApiUrl)
+	query := api.GetQuery(api.Question)
 
 	req := graphql.NewRequest(query)
 	req.Var("titleSlug", nameSlug)
 	req.Header.Set("Content-Type", "application/json")
 
-	var q model.QuestionDataQuery
+	var q api.QuestionQuery
 	err := client.Run(context.Background(), req, &q)
 	if err != nil {
 		if strings.Contains(err.Error(), "query does not exist") {
@@ -74,30 +67,34 @@ func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
 }
 
 func (s *ProblemScrapper) GetByNumber(num int) (*model.Question, error) {
-	c := colly.NewCollector(
-		colly.AllowedDomains("leetcode.com"),
-	)
+	client := graphql.NewClient(api.GraphqlApiUrl)
+	query := api.GetQuery(api.QuestionList)
 
-	var problemSubdirectories []string
-	elementSelector := "a.h-5.truncate.hover\\:text-primary-s.dark\\:hover\\:text-dark-primary-s"
-	c.OnHTML(elementSelector, func(e *colly.HTMLElement) {
-		subdirectory := e.Attr("href")
-		problemSubdirectories = append(problemSubdirectories, subdirectory)
+	numString := strconv.Itoa(num)
+
+	req := graphql.NewRequest(query)
+	req.Var("categorySlug", "")
+	req.Var("limit", 1)
+	req.Var("skip", 0)
+	req.Var("filters", map[string]string{
+		"searchKeywords": numString,
 	})
-	err := c.Visit("https://leetcode.com/problemset/all/?search=" + strconv.Itoa(num) + "&page=1")
-	if err != nil {
-		return nil, err
-	}
-	c.Wait()
+	req.Header.Set("Content-Type", "application/json")
 
-	if len(problemSubdirectories) == 0 {
-		return nil, errors.QuestionNotFound
-	}
-	problemUrl := "leetcode.com" + problemSubdirectories[0]
-	q, err := s.GetByUrl(problemUrl)
+	var q api.QuestionListQuery
+	err := client.Run(context.Background(), req, &q)
 	if err != nil {
 		return nil, err
+	}
+
+	if q.QuestionList.TotalNum == 0 {
+		return nil, errors.QuestionIdOutOfRange
 	} else {
-		return q, nil
+		ques := q.QuestionList.Data[0]
+		if ques.Id != numString {
+			return nil, errors.QuestionIdOutOfRange
+		} else {
+			return &ques, nil
+		}
 	}
 }

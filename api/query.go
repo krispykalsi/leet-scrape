@@ -7,26 +7,24 @@ import (
 )
 
 const (
-	queryFilesDirPath = "api"
+	queryFilesDirPath = "../api"
+	GraphqlApiUrl     = "https://leetcode.com/graphql/"
 )
 
-type PartOfProblem int
+type Query int
 
 const (
-	QuestionPart PartOfProblem = iota
-	SolutionPart
-	BothParts
+	Question Query = iota
+	QuestionList
 )
 
-func GetQuery(part PartOfProblem) string {
+func GetQuery(part Query) string {
 	var queryFileName string
 	switch part {
-	case QuestionPart:
+	case Question:
 		queryFileName = "question.gql"
-	case SolutionPart:
-		queryFileName = "solution.gql"
-	case BothParts:
-		queryFileName = "both.gql"
+	case QuestionList:
+		queryFileName = "question_list.gql"
 	default:
 		log.Fatal("Invalid part of problem")
 	}

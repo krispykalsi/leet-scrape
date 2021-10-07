@@ -1,0 +1,16 @@
+{
+  "name": "Leetcode GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default GraphQL Endpoint": {
+        "url": "https://leetcode.com/graphql/",
+        "headers": {
+          "user-agent": "JS GraphQL",
+          "content-type": "application/json"
+        },
+        "introspect": true
+      }
+    }
+  }
+}

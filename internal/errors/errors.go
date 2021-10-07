@@ -6,6 +6,7 @@ const (
 	FlagMissing
 	FileGeneration
 	QuestionNotFound
+	QuestionIdOutOfRange
 	Unexpected
 	NotImplemented
 	NoCodeSnippetsFound
@@ -42,6 +43,8 @@ func (e Error) GetMessage(cli string) string {
 		return "Something went wrong during the generation of solution template file"
 	case QuestionNotFound:
 		return "Question not found. Please check the spellings."
+	case QuestionIdOutOfRange:
+		return "Question number is out of range of the given list of questions on Leetcode. Please check what you entered"
 	case NoCodeSnippetsFound:
 		return "No code snippets found. Are you sure you entered the right command ? (\"" + cli + " sol\" and not \"leetscrape ques\")"
 	case SnippetNotFoundInGivenLang:

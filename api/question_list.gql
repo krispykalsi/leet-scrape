@@ -1,0 +1,19 @@
+query($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {
+    questionList(
+        categorySlug: $categorySlug
+        limit: $limit
+        skip: $skip
+        filters: $filters
+    ) {
+        totalNum
+        data {
+            questionFrontendId
+            titleSlug
+            codeSnippets {
+                lang
+                langSlug
+                code
+            }
+        }
+    }
+}

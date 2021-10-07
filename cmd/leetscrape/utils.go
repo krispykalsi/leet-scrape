@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ISKalsi/leet-scrape/v2/api"
 	"github.com/ISKalsi/leet-scrape/v2/data/repo"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"github.com/ISKalsi/leet-scrape/v2/domain/usecase"
@@ -25,7 +24,7 @@ func exitCli(err error) cli.ExitCoder {
 }
 
 func getQuestion(args *flagArgs) (*model.Question, error) {
-	s := repo.NewProblemScrapper(api.BothParts)
+	s := repo.NewProblemScrapper()
 
 	var getProblem *usecase.GetProblem
 	if args.url != "" {

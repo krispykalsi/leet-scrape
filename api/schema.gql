@@ -4,22 +4,24 @@ type CodeSnippetNode {
     code: String
 }
 type QuestionNode {
-    questionId: Int
-    questionFrontendId: Int
-    title: String
+    questionFrontendId: String
     titleSlug: String
     codeSnippets: [CodeSnippetNode]
     content: String
-    exampleTestcases: String
 }
+type QuestionList {
+    totalNum: Int
+    data: [QuestionNode]
+}
+input QuestionListFilterInput {
+    searchKeywords: String
+}
+
 type Query {
     question(titleSlug: String!) : QuestionNode
-}
-type Mutation {
-    question(titleSlug: String!) : QuestionNode
+    questionList(categorySlug:String, limit: Int, skip: Int, filters: QuestionListFilterInput) : QuestionList
 }
 
 schema {
     query: Query
-    mutation: Mutation
 }

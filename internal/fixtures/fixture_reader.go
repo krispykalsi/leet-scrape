@@ -2,6 +2,7 @@ package fixtures
 
 import (
 	"encoding/json"
+	"github.com/ISKalsi/leet-scrape/v2/api"
 	"github.com/ISKalsi/leet-scrape/v2/domain/model"
 	"os"
 )
@@ -11,7 +12,7 @@ func ImportFromFile(filepath string) (model.Question, error) {
 	if err != nil {
 		return model.Question{}, err
 	}
-	var q map[string]model.QuestionDataQuery
+	var q map[string]api.QuestionQuery
 	err = json.Unmarshal(file, &q)
 	if err != nil {
 		return model.Question{}, err
