@@ -1,4 +1,4 @@
-package fixtures
+package testdata
 
 import (
 	"encoding/json"

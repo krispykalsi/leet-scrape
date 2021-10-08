@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/ISKalsi/leet-scrape/v2/data/model"
 	internalErr "github.com/ISKalsi/leet-scrape/v2/internal/errors"
-	"github.com/ISKalsi/leet-scrape/v2/internal/fixtures"
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -13,7 +13,7 @@ import (
 func TestGetByName(group *testing.T) {
 	group.Run("should return valid Question using it's name", func(t *testing.T) {
 		testName := "Two sum"
-		testQues, _ := fixtures.ImportFromFile("two_sum.json")
+		testQues, _ := testdata.ImportFromFile("two_sum.json")
 		testQuery := &model.QuestionQuery{
 			Question: testQues,
 		}

@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
-	"github.com/ISKalsi/leet-scrape/v2/internal/fixtures"
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -13,7 +13,7 @@ func TestGetProblemUseCase(group *testing.T) {
 	testUrl := "https://leetcode.com/problems/two-sum/"
 	testNum := 45
 
-	testQuestion := &fixtures.TestQuestion
+	testQuestion := &testdata.QuestionWithImg
 
 	group.Run("should return valid GetProblem use case", func(tt *testing.T) {
 		tt.Run("by name", func(t *testing.T) {
@@ -61,7 +61,7 @@ func TestGetProblemUseCase(group *testing.T) {
 
 		tt.Run("by url", func(t *testing.T) {
 			mockScrapper := mock.ProblemScrapper{}
-			mockScrapper.On("GetByUrl", testUrl).Return(&fixtures.TestQuestion, nil)
+			mockScrapper.On("GetByUrl", testUrl).Return(&testdata.QuestionWithImg, nil)
 			getProblem := NewGetProblemByUrl(&mockScrapper, testUrl)
 			actualQuestion, err := getProblem.Execute()
 			assert.Nil(t, err)
@@ -72,7 +72,7 @@ func TestGetProblemUseCase(group *testing.T) {
 
 		tt.Run("by num", func(t *testing.T) {
 			mockScrapper := mock.ProblemScrapper{}
-			mockScrapper.On("GetByNumber", testNum).Return(&fixtures.TestQuestion, nil)
+			mockScrapper.On("GetByNumber", testNum).Return(&testdata.QuestionWithImg, nil)
 			getProblem := NewGetProblemByNumber(&mockScrapper, testNum)
 			actualQuestion, err := getProblem.Execute()
 			assert.Nil(t, err)

@@ -3,14 +3,14 @@ package usecase
 import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
-	"github.com/ISKalsi/leet-scrape/v2/internal/fixtures"
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGenerateSolutionFileUseCase(group *testing.T) {
-	testQuestion := &fixtures.TestQuestion
+	testQuestion := &testdata.QuestionWithImg
 	testPath := "testFiles/cpp"
 	testBoilerplate := "// this is a test comment\n\n"
 	testLang := "C++"
