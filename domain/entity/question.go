@@ -1,4 +1,4 @@
-package model
+package entity
 
 type Question struct {
 	Id           string        `json:"questionFrontendId"`

@@ -2,7 +2,7 @@ package repo
 
 import (
 	"github.com/ISKalsi/leet-scrape/v2/data/datasource"
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/util"
 	"regexp"
@@ -18,7 +18,7 @@ func NewProblemScrapper(c datasource.GraphQLApi) *ProblemScrapper {
 	return &ProblemScrapper{api: c}
 }
 
-func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
+func (s *ProblemScrapper) GetByName(name string) (*entity.Question, error) {
 	nameSlug := util.ConvertToSlug(name)
 	response, err := s.api.FetchBySlug(nameSlug)
 	if err != nil {
@@ -31,7 +31,7 @@ func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
 	return &response.Question, nil
 }
 
-func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
+func (s *ProblemScrapper) GetByUrl(url string) (*entity.Question, error) {
 	isLeetcodeUrl, _ := regexp.MatchString(`leetcode\.com`, url)
 	if isLeetcodeUrl {
 		problemSetRegex := regexp.MustCompile(`.*problems/([\w-]*).*`)
@@ -57,7 +57,7 @@ func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
 	}
 }
 
-func (s *ProblemScrapper) GetByNumber(num int) (*model.Question, error) {
+func (s *ProblemScrapper) GetByNumber(num int) (*entity.Question, error) {
 	numString := strconv.Itoa(num)
 	response, err := s.api.FetchByNumber(numString)
 	if err != nil {

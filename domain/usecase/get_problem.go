@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/domain/repo"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 )
@@ -46,8 +46,8 @@ func NewGetProblemByUrl(scrapper repo.ProblemScrapper, url string) *GetProblem {
 	}
 }
 
-func (uc *GetProblem) Execute() (*model.Question, error) {
-	var question *model.Question
+func (uc *GetProblem) Execute() (*entity.Question, error) {
+	var question *entity.Question
 	var err error
 	switch uc.search {
 	case byName:

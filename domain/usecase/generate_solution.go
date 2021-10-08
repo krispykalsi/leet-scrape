@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/domain/service"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/util"
@@ -10,13 +10,13 @@ import (
 
 type GenerateSolutionFile struct {
 	writer      service.FileWriter
-	question    *model.Question
+	question    *entity.Question
 	path        string
 	boilerplate string
 	language    string
 }
 
-func NewGenerateSolutionFile(q *model.Question, w service.FileWriter, path string, boilerplate string, lang string) *GenerateSolutionFile {
+func NewGenerateSolutionFile(q *entity.Question, w service.FileWriter, path string, boilerplate string, lang string) *GenerateSolutionFile {
 	return &GenerateSolutionFile{
 		writer:      w,
 		question:    q,

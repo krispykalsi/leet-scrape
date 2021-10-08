@@ -3,12 +3,13 @@ package datasource
 import (
 	"context"
 	"github.com/ISKalsi/leet-scrape/v2/api"
+	"github.com/ISKalsi/leet-scrape/v2/data/model"
 	"github.com/machinebox/graphql"
 )
 
 type GraphQLApi interface {
-	FetchBySlug(titleSlug string) (*api.QuestionQuery, error)
-	FetchByNumber(id string) (*api.QuestionListQuery, error)
+	FetchBySlug(titleSlug string) (*model.QuestionQuery, error)
+	FetchByNumber(id string) (*model.QuestionListQuery, error)
 }
 
 type GraphQLApiImpl struct {
@@ -19,13 +20,13 @@ func NewGraphQLApiImpl(c *graphql.Client) *GraphQLApiImpl {
 	return &GraphQLApiImpl{client: c}
 }
 
-func (g *GraphQLApiImpl) FetchBySlug(titleSlug string) (*api.QuestionQuery, error) {
+func (g *GraphQLApiImpl) FetchBySlug(titleSlug string) (*model.QuestionQuery, error) {
 	query := api.GetQuery(api.Question)
 	req := graphql.NewRequest(query)
 	req.Var("titleSlug", titleSlug)
 	req.Header.Set("Content-Type", "application/json")
 
-	var response api.QuestionQuery
+	var response model.QuestionQuery
 	err := g.client.Run(context.Background(), req, &response)
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func (g *GraphQLApiImpl) FetchBySlug(titleSlug string) (*api.QuestionQuery, erro
 	}
 }
 
-func (g *GraphQLApiImpl) FetchByNumber(id string) (*api.QuestionListQuery, error) {
+func (g *GraphQLApiImpl) FetchByNumber(id string) (*model.QuestionListQuery, error) {
 	query := api.GetQuery(api.QuestionList)
 	req := graphql.NewRequest(query)
 	req.Var("categorySlug", "")
@@ -45,7 +46,7 @@ func (g *GraphQLApiImpl) FetchByNumber(id string) (*api.QuestionListQuery, error
 	})
 	req.Header.Set("Content-Type", "application/json")
 
-	var response api.QuestionListQuery
+	var response model.QuestionListQuery
 	err := g.client.Run(context.Background(), req, &response)
 	if err != nil {
 		return nil, err

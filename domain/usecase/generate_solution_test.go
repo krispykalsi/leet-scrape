@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/fixtures"
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
@@ -26,10 +26,10 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 
 	group.Run("should prepend boilerplate code to the given code snippet (with newline chars fixed) before writing it to file", func(t *testing.T) {
 		mw := &mock.FileWriter{}
-		q := &model.Question{
+		q := &entity.Question{
 			TitleSlug: "two-sum",
 			Content:   "<sample content>",
-			CodeSnippets: []model.CodeSnippet{
+			CodeSnippets: []entity.CodeSnippet{
 				{
 					"C++",
 					"cpp",
@@ -48,10 +48,10 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 	group.Run("error verification", func(tt *testing.T) {
 		tt.Run("should return NoCodeSnippetsFound error when there are no code snippets in the given question", func(t *testing.T) {
 			mw := &mock.FileWriter{}
-			q := &model.Question{
+			q := &entity.Question{
 				TitleSlug:    "two-sum",
 				Content:      "<question description>",
-				CodeSnippets: []model.CodeSnippet{},
+				CodeSnippets: []entity.CodeSnippet{},
 			}
 			uc := NewGenerateSolutionFile(q, mw, testPath, testBoilerplate, testLang)
 			err := uc.Execute()
@@ -60,10 +60,10 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 
 		tt.Run("should return ExtensionNotFound error when there is no file extension corresponding to the given language", func(t *testing.T) {
 			mw := &mock.FileWriter{}
-			q := &model.Question{
+			q := &entity.Question{
 				TitleSlug: "two-sum",
 				Content:   "<question description>",
-				CodeSnippets: []model.CodeSnippet{
+				CodeSnippets: []entity.CodeSnippet{
 					{
 						"D",
 						"d",
@@ -78,10 +78,10 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 
 		tt.Run("should return SnippetNotFoundInGivenLang error when there is no code snippets corresponding to the given language", func(t *testing.T) {
 			mw := &mock.FileWriter{}
-			q := &model.Question{
+			q := &entity.Question{
 				TitleSlug: "two-sum",
 				Content:   "<question description>",
-				CodeSnippets: []model.CodeSnippet{
+				CodeSnippets: []entity.CodeSnippet{
 					{
 						"D",
 						"d",

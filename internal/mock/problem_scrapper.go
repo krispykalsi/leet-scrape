@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/ISKalsi/leet-scrape/v2/domain/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -9,23 +9,23 @@ type ProblemScrapper struct {
 	mock.Mock
 }
 
-func (s *ProblemScrapper) GetByName(name string) (*model.Question, error) {
+func (s *ProblemScrapper) GetByName(name string) (*entity.Question, error) {
 	args := s.Called(name)
-	ques, _ := args.Get(0).(*model.Question)
+	ques, _ := args.Get(0).(*entity.Question)
 	err := args.Error(1)
 	return ques, err
 }
 
-func (s *ProblemScrapper) GetByUrl(url string) (*model.Question, error) {
+func (s *ProblemScrapper) GetByUrl(url string) (*entity.Question, error) {
 	args := s.Called(url)
-	ques, _ := args.Get(0).(*model.Question)
+	ques, _ := args.Get(0).(*entity.Question)
 	err := args.Error(1)
 	return ques, err
 }
 
-func (s *ProblemScrapper) GetByNumber(num int) (*model.Question, error) {
+func (s *ProblemScrapper) GetByNumber(num int) (*entity.Question, error) {
 	args := s.Called(num)
-	ques, _ := args.Get(0).(*model.Question)
+	ques, _ := args.Get(0).(*entity.Question)
 	err := args.Error(1)
 	return ques, err
 }
