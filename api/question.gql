@@ -1,5 +1,6 @@
 query($titleSlug: String!) {
     question(titleSlug: $titleSlug) {
+        questionFrontendId
         titleSlug
         content
         codeSnippets {

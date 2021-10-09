@@ -3,10 +3,12 @@ package repo
 import (
 	"errors"
 	"github.com/ISKalsi/leet-scrape/v2/data/model"
+	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	internalErr "github.com/ISKalsi/leet-scrape/v2/internal/errors"
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
 	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 )
 
@@ -162,5 +164,78 @@ func TestGetByUrl(group *testing.T) {
 
 		assert.Nil(t, ques)
 		assert.NotNil(t, err)
+	})
+}
+
+func TestGetByNumber(group *testing.T) {
+	testQues, _ := testdata.ImportFromFile("two_sum.json")
+
+	group.Run("should return valid Question using its id", func(t *testing.T) {
+		testQuery := &model.QuestionListQuery{
+			QuestionList: struct {
+				TotalNum int               `json:"totalNum"`
+				Data     []entity.Question `json:"data"`
+			}{
+				TotalNum: 1,
+				Data:     []entity.Question{testQues},
+			},
+		}
+		testNum := 1
+		mockApi := &mock.GraphQLApi{}
+		mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testQuery, nil)
+		scrapper := NewProblemScrapper(mockApi)
+
+		actualQues, err := scrapper.GetByNumber(testNum)
+
+		assert.Nil(t, err)
+		assert.Equal(t, &testQues, actualQues)
+	})
+
+	group.Run("error verification", func(tt *testing.T) {
+		tt.Run("should return QuestionIdOutOfRange error when no question list is returned by api", func(t *testing.T) {
+			testNum := 1
+			testEmptyQueryList := &model.QuestionListQuery{}
+			mockApi := &mock.GraphQLApi{}
+			mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testEmptyQueryList, nil)
+			scrapper := NewProblemScrapper(mockApi)
+
+			ques, err := scrapper.GetByNumber(testNum)
+
+			assert.Nil(t, ques)
+			assert.ErrorIs(t, err, internalErr.QuestionIdOutOfRange)
+		})
+
+		tt.Run("should return QuestionIdOutOfRange error when entered id is out of range", func(t *testing.T) {
+			data := []int{
+				-1,
+				0,
+				2030,
+				25352325,
+			}
+			testQuery := &model.QuestionListQuery{
+				QuestionList: struct {
+					TotalNum int               `json:"totalNum"`
+					Data     []entity.Question `json:"data"`
+				}{
+					TotalNum: 1,
+					Data: []entity.Question{
+						{
+							Id: "5",
+						},
+						testQues,
+					},
+				},
+			}
+			for _, testNum := range data {
+				mockApi := &mock.GraphQLApi{}
+				mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testQuery, nil)
+				scrapper := NewProblemScrapper(mockApi)
+
+				ques, err := scrapper.GetByNumber(testNum)
+
+				assert.Nil(t, ques)
+				assert.ErrorIs(t, err, internalErr.QuestionIdOutOfRange)
+			}
+		})
 	})
 }
