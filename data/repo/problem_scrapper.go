@@ -34,7 +34,7 @@ func (s *ProblemScrapper) GetByName(name string) (*entity.Question, error) {
 func (s *ProblemScrapper) GetByUrl(url string) (*entity.Question, error) {
 	isLeetcodeUrl, _ := regexp.MatchString(`leetcode\.com`, url)
 	if isLeetcodeUrl {
-		problemSetRegex := regexp.MustCompile(`.*problems/([\w-]*).*`)
+		problemSetRegex := regexp.MustCompile(`.*problems/([\w-]*)/?$`)
 		isFromProblemSet := problemSetRegex.MatchString(url)
 		if isFromProblemSet {
 			captureGroups := problemSetRegex.SubexpNames()
