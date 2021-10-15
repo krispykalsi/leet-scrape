@@ -3,7 +3,7 @@ package usecase
 import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
-	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/mock/service"
 	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -17,7 +17,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 	testLang := "C++"
 
 	group.Run("should return valid object from constructor", func(t *testing.T) {
-		mockWriter := &mock.FileWriter{}
+		mockWriter := &service.FileWriter{}
 		uc := NewGenerateSolutionFile(testQuestion, mockWriter, testFileName, testPath, testBoilerplate, testLang)
 		assert.Equal(t, testQuestion, uc.question)
 		assert.Equal(t, testPath, uc.path)
@@ -27,7 +27,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 	})
 
 	group.Run("should prepend boilerplate code to the given code snippet (with newline chars fixed) before writing it to file", func(t *testing.T) {
-		mw := &mock.FileWriter{}
+		mw := &service.FileWriter{}
 		q := &entity.Question{
 			TitleSlug: "two-sum",
 			Content:   "<sample content>",
@@ -48,7 +48,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 	})
 
 	group.Run("should write the file with correct filename", func(t *testing.T) {
-		mw := &mock.FileWriter{}
+		mw := &service.FileWriter{}
 		q := &entity.Question{
 			CodeSnippets: []entity.CodeSnippet{
 				{
@@ -66,7 +66,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 
 	group.Run("error verification", func(tt *testing.T) {
 		tt.Run("should return NoCodeSnippetsFound error when there are no code snippets in the given question", func(t *testing.T) {
-			mw := &mock.FileWriter{}
+			mw := &service.FileWriter{}
 			q := &entity.Question{
 				TitleSlug:    "two-sum",
 				Content:      "<question description>",
@@ -78,7 +78,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 		})
 
 		tt.Run("should return ExtensionNotFound error when there is no file extension corresponding to the given language", func(t *testing.T) {
-			mw := &mock.FileWriter{}
+			mw := &service.FileWriter{}
 			q := &entity.Question{
 				TitleSlug: "two-sum",
 				Content:   "<question description>",
@@ -96,7 +96,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 		})
 
 		tt.Run("should return SnippetNotFoundInGivenLang error when there is no code snippets corresponding to the given language", func(t *testing.T) {
-			mw := &mock.FileWriter{}
+			mw := &service.FileWriter{}
 			q := &entity.Question{
 				TitleSlug: "two-sum",
 				Content:   "<question description>",

@@ -12,17 +12,18 @@ const (
 	byName searchingMethod = iota
 	byNumber
 	byUrl
+	problemOfDay
 )
 
 type GetProblem struct {
-	repo   repo.ProblemScrapper
+	repo   repo.Problem
 	search searchingMethod
 	num    int
 	url    string
 	name   string
 }
 
-func NewGetProblemByName(scrapper repo.ProblemScrapper, name string) *GetProblem {
+func NewGetProblemByName(scrapper repo.Problem, name string) *GetProblem {
 	return &GetProblem{
 		repo:   scrapper,
 		search: byName,
@@ -30,7 +31,7 @@ func NewGetProblemByName(scrapper repo.ProblemScrapper, name string) *GetProblem
 	}
 }
 
-func NewGetProblemByNumber(scrapper repo.ProblemScrapper, num int) *GetProblem {
+func NewGetProblemByNumber(scrapper repo.Problem, num int) *GetProblem {
 	return &GetProblem{
 		repo:   scrapper,
 		search: byNumber,
@@ -38,11 +39,18 @@ func NewGetProblemByNumber(scrapper repo.ProblemScrapper, num int) *GetProblem {
 	}
 }
 
-func NewGetProblemByUrl(scrapper repo.ProblemScrapper, url string) *GetProblem {
+func NewGetProblemByUrl(scrapper repo.Problem, url string) *GetProblem {
 	return &GetProblem{
 		repo:   scrapper,
 		search: byUrl,
 		url:    url,
+	}
+}
+
+func NewGetProblemOfTheDay(scrapper repo.Problem) *GetProblem {
+	return &GetProblem{
+		repo:   scrapper,
+		search: problemOfDay,
 	}
 }
 
@@ -56,6 +64,8 @@ func (uc *GetProblem) Execute() (*entity.Question, error) {
 		question, err = uc.repo.GetByUrl(uc.url)
 	case byNumber:
 		question, err = uc.repo.GetByNumber(uc.num)
+	case problemOfDay:
+		question, err = uc.repo.GetProblemOfTheDay()
 	default:
 		return nil, errors.InvalidSearchMethod
 	}

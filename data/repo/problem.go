@@ -10,17 +10,18 @@ import (
 	"strings"
 )
 
-type ProblemScrapper struct {
-	api datasource.GraphQLApi
+type Problem struct {
+	graphQLClient datasource.GraphQLApi
+	scrapper      datasource.WebScrapper
 }
 
-func NewProblemScrapper(c datasource.GraphQLApi) *ProblemScrapper {
-	return &ProblemScrapper{api: c}
+func NewProblem(client datasource.GraphQLApi, scrapper datasource.WebScrapper) *Problem {
+	return &Problem{graphQLClient: client, scrapper: scrapper}
 }
 
-func (s *ProblemScrapper) GetByName(name string) (*entity.Question, error) {
+func (s *Problem) GetByName(name string) (*entity.Question, error) {
 	nameSlug := util.ConvertToSlug(name)
-	response, err := s.api.FetchBySlug(nameSlug)
+	response, err := s.graphQLClient.FetchBySlug(nameSlug)
 	if err != nil {
 		if strings.Contains(err.Error(), "query does not exist") {
 			return nil, errors.QuestionNotFound
@@ -31,7 +32,7 @@ func (s *ProblemScrapper) GetByName(name string) (*entity.Question, error) {
 	return &response.Question, nil
 }
 
-func (s *ProblemScrapper) GetByUrl(url string) (*entity.Question, error) {
+func (s *Problem) GetByUrl(url string) (*entity.Question, error) {
 	isLeetcodeUrl, _ := regexp.MatchString(`leetcode\.com`, url)
 	if isLeetcodeUrl {
 		problemSetRegex := regexp.MustCompile(`.*problems/([\w-]*)/?$`)
@@ -57,13 +58,12 @@ func (s *ProblemScrapper) GetByUrl(url string) (*entity.Question, error) {
 	}
 }
 
-func (s *ProblemScrapper) GetByNumber(num int) (*entity.Question, error) {
+func (s *Problem) GetByNumber(num int) (*entity.Question, error) {
 	numString := strconv.Itoa(num)
-	response, err := s.api.FetchByNumber(numString)
+	response, err := s.graphQLClient.FetchByNumber(numString)
 	if err != nil {
 		return nil, err
 	}
-
 	if response.QuestionList.TotalNum == 0 {
 		return nil, errors.QuestionIdOutOfRange
 	} else {
@@ -74,4 +74,16 @@ func (s *ProblemScrapper) GetByNumber(num int) (*entity.Question, error) {
 			return &ques, nil
 		}
 	}
+}
+
+func (s *Problem) GetProblemOfTheDay() (*entity.Question, error) {
+	name, err := s.scrapper.ScrapeNameOfProblemOfTheDay()
+	if err != nil {
+		return nil, err
+	}
+	q, err := s.GetByName(name)
+	if err != nil {
+		return nil, err
+	}
+	return q, nil
 }

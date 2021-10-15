@@ -7,9 +7,11 @@ import (
 )
 
 const (
-	URL      = "url"
-	NAME     = "name"
-	NUMBER   = "number"
+	URL    = "url"
+	NAME   = "name"
+	NUMBER = "number"
+	TODAY  = "daily-problem"
+
 	LOCATION = "output-dir"
 
 	QUESTION = "question"
@@ -43,6 +45,11 @@ func main() {
 				Value:   -1,
 				Aliases: []string{"N"},
 				Usage:   "Search problem by its `<" + NUMBER + ">`.Eg: " + CliName + " -N 1 sol",
+			},
+			&cli.BoolFlag{
+				Name:    TODAY,
+				Aliases: []string{"d"},
+				Usage:   "Get problem of the day. Eg: " + CliName + " -d sol -l C++",
 			},
 			&cli.StringFlag{
 				Name:    LOCATION,

@@ -5,7 +5,7 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/data/model"
 	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	internalErr "github.com/ISKalsi/leet-scrape/v2/internal/errors"
-	"github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/mock/datasource"
 	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -28,11 +28,12 @@ func TestGetByName(group *testing.T) {
 		}
 		for _, testName := range data {
 			tt.Run(testName, func(t *testing.T) {
-				mockApi := &mock.GraphQLApi{}
+				mockApi := &datasource.GraphQLApi{}
+				mockScrapper := &datasource.WebScrapper{}
 				mockApi.On("FetchBySlug", testQues.TitleSlug).Return(testQuery, nil)
-				scrapper := NewProblemScrapper(mockApi)
+				repository := NewProblem(mockApi, mockScrapper)
 
-				actualQues, err := scrapper.GetByName(testName)
+				actualQues, err := repository.GetByName(testName)
 
 				assert.Nil(t, err)
 				assert.Equal(t, &testQues, actualQues)
@@ -45,33 +46,36 @@ func TestGetByName(group *testing.T) {
 		testSlug := "twwo-sum"
 
 		tt.Run("when no question and random error is returned by the api", func(t *testing.T) {
-			mockApi := &mock.GraphQLApi{}
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
 			mockApi.On("FetchBySlug", testSlug).Return(nil, errors.New("random error"))
-			scrapper := NewProblemScrapper(mockApi)
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByName(testName)
+			ques, err := repository.GetByName(testName)
 
 			assert.NotNil(t, err)
 			assert.Nil(t, ques)
 		})
 
 		tt.Run("when a dummy question and random error is returned by the api", func(t *testing.T) {
-			mockApi := &mock.GraphQLApi{}
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
 			mockApi.On("FetchBySlug", testSlug).Return(&model.QuestionQuery{}, errors.New("random error"))
-			scrapper := NewProblemScrapper(mockApi)
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByName(testName)
+			ques, err := repository.GetByName(testName)
 
 			assert.NotNil(t, err)
 			assert.Nil(t, ques)
 		})
 
 		tt.Run("when no question and \"query does not exist\" error is returned by the api", func(t *testing.T) {
-			mockApi := &mock.GraphQLApi{}
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
 			mockApi.On("FetchBySlug", testSlug).Return(nil, errors.New("query does not exist"))
-			scrapper := NewProblemScrapper(mockApi)
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByName(testName)
+			ques, err := repository.GetByName(testName)
 
 			assert.NotNil(t, err)
 			assert.Nil(t, ques)
@@ -81,11 +85,12 @@ func TestGetByName(group *testing.T) {
 	group.Run("should return QuestionNotFound error when the query does not exist in the api", func(t *testing.T) {
 		testName := "Twwo sum"
 		testSlug := "twwo-sum"
-		mockApi := &mock.GraphQLApi{}
+		mockApi := &datasource.GraphQLApi{}
+		mockScrapper := &datasource.WebScrapper{}
 		mockApi.On("FetchBySlug", testSlug).Return(nil, errors.New("query does not exist"))
-		scrapper := NewProblemScrapper(mockApi)
+		repository := NewProblem(mockApi, mockScrapper)
 
-		_, err := scrapper.GetByName(testName)
+		_, err := repository.GetByName(testName)
 
 		assert.ErrorIs(t, internalErr.QuestionNotFound, err)
 	})
@@ -106,11 +111,12 @@ func TestGetByUrl(group *testing.T) {
 		}
 		for _, testUrl := range data {
 			tt.Run(testUrl, func(t *testing.T) {
-				mockApi := &mock.GraphQLApi{}
+				mockApi := &datasource.GraphQLApi{}
+				mockScrapper := &datasource.WebScrapper{}
 				mockApi.On("FetchBySlug", testQues.TitleSlug).Return(testQuery, nil)
-				scrapper := NewProblemScrapper(mockApi)
+				repository := NewProblem(mockApi, mockScrapper)
 
-				actualQues, err := scrapper.GetByUrl(testUrl)
+				actualQues, err := repository.GetByUrl(testUrl)
 
 				assert.Nil(t, err)
 				assert.Equal(t, &testQues, actualQues)
@@ -121,10 +127,11 @@ func TestGetByUrl(group *testing.T) {
 	group.Run("error verification", func(tt *testing.T) {
 		tt.Run("should return InvalidUrl error when domain name is not leetcode.com", func(t *testing.T) {
 			testUrl := "https://codeforces.com/problemset/problem/1600/J"
-			mockApi := &mock.GraphQLApi{}
-			scrapper := NewProblemScrapper(mockApi)
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByUrl(testUrl)
+			ques, err := repository.GetByUrl(testUrl)
 
 			assert.Nil(t, ques)
 			assert.ErrorIs(t, err, internalErr.InvalidURL)
@@ -132,10 +139,11 @@ func TestGetByUrl(group *testing.T) {
 
 		tt.Run("should return LoginRequired error when problem is from a leetcode curated playlist", func(t *testing.T) {
 			testUrl := "https://leetcode.com/explore/interview/card/top-interview-questions-easy/94/trees/631/"
-			mockApi := &mock.GraphQLApi{}
-			scrapper := NewProblemScrapper(mockApi)
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByUrl(testUrl)
+			ques, err := repository.GetByUrl(testUrl)
 
 			assert.Nil(t, ques)
 			assert.ErrorIs(t, err, internalErr.LoginRequired)
@@ -143,10 +151,11 @@ func TestGetByUrl(group *testing.T) {
 
 		tt.Run("should return InvalidUrl error when 2nd subdomain of url is not a valid slug string", func(t *testing.T) {
 			testUrl := "https://leetcode.com/problems/pow(x,n)/"
-			mockApi := &mock.GraphQLApi{}
-			scrapper := NewProblemScrapper(mockApi)
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByUrl(testUrl)
+			ques, err := repository.GetByUrl(testUrl)
 
 			assert.Nil(t, ques)
 			assert.ErrorIs(t, err, internalErr.LoginRequired)
@@ -156,11 +165,12 @@ func TestGetByUrl(group *testing.T) {
 	group.Run("should return no Question (nil) in case of an error from api", func(t *testing.T) {
 		testUrl := "https://leetcode.com/problems/two-summ/"
 		testSlug := "two-summ"
-		mockApi := &mock.GraphQLApi{}
+		mockApi := &datasource.GraphQLApi{}
+		mockScrapper := &datasource.WebScrapper{}
 		mockApi.On("FetchBySlug", testSlug).Return(nil, errors.New("query does not exist"))
-		scrapper := NewProblemScrapper(mockApi)
+		repository := NewProblem(mockApi, mockScrapper)
 
-		ques, err := scrapper.GetByUrl(testUrl)
+		ques, err := repository.GetByUrl(testUrl)
 
 		assert.Nil(t, ques)
 		assert.NotNil(t, err)
@@ -181,11 +191,12 @@ func TestGetByNumber(group *testing.T) {
 			},
 		}
 		testNum := 1
-		mockApi := &mock.GraphQLApi{}
+		mockApi := &datasource.GraphQLApi{}
+		mockScrapper := &datasource.WebScrapper{}
 		mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testQuery, nil)
-		scrapper := NewProblemScrapper(mockApi)
+		repository := NewProblem(mockApi, mockScrapper)
 
-		actualQues, err := scrapper.GetByNumber(testNum)
+		actualQues, err := repository.GetByNumber(testNum)
 
 		assert.Nil(t, err)
 		assert.Equal(t, &testQues, actualQues)
@@ -195,11 +206,12 @@ func TestGetByNumber(group *testing.T) {
 		tt.Run("should return QuestionIdOutOfRange error when no question list is returned by api", func(t *testing.T) {
 			testNum := 1
 			testEmptyQueryList := &model.QuestionListQuery{}
-			mockApi := &mock.GraphQLApi{}
+			mockApi := &datasource.GraphQLApi{}
+			mockScrapper := &datasource.WebScrapper{}
 			mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testEmptyQueryList, nil)
-			scrapper := NewProblemScrapper(mockApi)
+			repository := NewProblem(mockApi, mockScrapper)
 
-			ques, err := scrapper.GetByNumber(testNum)
+			ques, err := repository.GetByNumber(testNum)
 
 			assert.Nil(t, ques)
 			assert.ErrorIs(t, err, internalErr.QuestionIdOutOfRange)
@@ -227,15 +239,33 @@ func TestGetByNumber(group *testing.T) {
 				},
 			}
 			for _, testNum := range data {
-				mockApi := &mock.GraphQLApi{}
+				mockApi := &datasource.GraphQLApi{}
+				mockScrapper := &datasource.WebScrapper{}
 				mockApi.On("FetchByNumber", strconv.Itoa(testNum)).Return(testQuery, nil)
-				scrapper := NewProblemScrapper(mockApi)
+				repository := NewProblem(mockApi, mockScrapper)
 
-				ques, err := scrapper.GetByNumber(testNum)
+				ques, err := repository.GetByNumber(testNum)
 
 				assert.Nil(t, ques)
 				assert.ErrorIs(t, err, internalErr.QuestionIdOutOfRange)
 			}
 		})
 	})
+}
+
+func TestGetProblemOfTheDay(t *testing.T) {
+	testQues, _ := testdata.ImportFromFile("two_sum.json")
+	testQuery := &model.QuestionQuery{
+		Question: testQues,
+	}
+	mockApi := &datasource.GraphQLApi{}
+	mockScrapper := &datasource.WebScrapper{}
+	mockApi.On("FetchBySlug", "two-sum").Return(testQuery, nil)
+	mockScrapper.On("ScrapeNameOfProblemOfTheDay").Return("Two Sum", nil)
+	repository := NewProblem(mockApi, mockScrapper)
+
+	actualQues, err := repository.GetProblemOfTheDay()
+
+	assert.Nil(t, err)
+	assert.Equal(t, &testQues, actualQues)
 }

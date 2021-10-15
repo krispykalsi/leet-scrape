@@ -7,6 +7,7 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
 	"github.com/ISKalsi/leet-scrape/v2/domain/usecase"
 	"github.com/ISKalsi/leet-scrape/v2/internal/errors"
+	"github.com/gocolly/colly/v2"
 	"github.com/machinebox/graphql"
 	"github.com/urfave/cli/v2"
 )
@@ -27,17 +28,21 @@ func exitCli(err error) cli.ExitCoder {
 }
 
 func getQuestion(args *flagArgs) (*entity.Question, error) {
-	c := graphql.NewClient(api.GraphqlApiUrl)
-	a := datasource.NewGraphQLApiImpl(c)
-	s := repo.NewProblemScrapper(a)
+	client := graphql.NewClient(api.GraphqlApiUrl)
+	graphqlClient := datasource.NewGraphQLApiImpl(client)
+	collector := colly.NewCollector(colly.AllowedDomains("leetcode.com"))
+	webScrapper := datasource.NewWebScrapperImpl(collector)
+	repository := repo.NewProblem(graphqlClient, webScrapper)
 
 	var getProblem *usecase.GetProblem
 	if args.url != "" {
-		getProblem = usecase.NewGetProblemByUrl(s, args.url)
+		getProblem = usecase.NewGetProblemByUrl(repository, args.url)
 	} else if args.name != "" {
-		getProblem = usecase.NewGetProblemByName(s, args.name)
+		getProblem = usecase.NewGetProblemByName(repository, args.name)
 	} else if args.num != -1 {
-		getProblem = usecase.NewGetProblemByNumber(s, args.num)
+		getProblem = usecase.NewGetProblemByNumber(repository, args.num)
+	} else if args.today {
+		getProblem = usecase.NewGetProblemOfTheDay(repository)
 	} else {
 		return nil, errors.FlagMissing
 	}
@@ -52,7 +57,7 @@ func getQuestion(args *flagArgs) (*entity.Question, error) {
 func getFileName(q *entity.Question, args *flagArgs) (string, error) {
 	if args.url != "" || args.name != "" {
 		return q.TitleSlug, nil
-	} else if args.num != -1 {
+	} else if args.num != -1 || args.today {
 		return q.Id, nil
 	} else {
 		return "", errors.FlagMissing

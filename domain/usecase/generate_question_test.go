@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"github.com/ISKalsi/leet-scrape/v2/domain/entity"
-	mocks "github.com/ISKalsi/leet-scrape/v2/internal/mock"
+	"github.com/ISKalsi/leet-scrape/v2/internal/mock/service"
 	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,8 +15,8 @@ func TestGenerateQuestionFileUseCase(group *testing.T) {
 	testQues, _ := testdata.ImportFromFile("convert_sorted_array_to_binary_search_tree.json")
 	anyString := mock.AnythingOfType("string")
 	group.Run("should write file with correct content and name at the correct path", func(t *testing.T) {
-		mockFileWriter := &mocks.FileWriter{}
-		mockImageDownloader := &mocks.ImageDownloader{}
+		mockFileWriter := &service.FileWriter{}
+		mockImageDownloader := &service.ImageDownloader{}
 		mockFileWriter.On("WriteDataToFile", testQues.TitleSlug+".html", testPath, anyString).Return(nil)
 		mockImageDownloader.On("DownloadImageFromUrl", anyString, anyString, anyString).Return(nil)
 		uc := NewGenerateQuestionFile(&testQues, testPath, mockFileWriter, mockImageDownloader)
@@ -26,8 +26,8 @@ func TestGenerateQuestionFileUseCase(group *testing.T) {
 	})
 
 	group.Run("should download images from the current url at the correct path", func(t *testing.T) {
-		mockFileWriter := &mocks.FileWriter{}
-		mockImageDownloader := &mocks.ImageDownloader{}
+		mockFileWriter := &service.FileWriter{}
+		mockImageDownloader := &service.ImageDownloader{}
 		mockFileWriter.On("WriteDataToFile", anyString, anyString, anyString).Return(nil)
 		imgData := []struct {
 			name string
@@ -50,8 +50,8 @@ func TestGenerateQuestionFileUseCase(group *testing.T) {
 	})
 
 	group.Run("should replace image url with local path of downloaded image before writing to html file", func(t *testing.T) {
-		mockFileWriter := &mocks.FileWriter{}
-		mockImageDownloader := &mocks.ImageDownloader{}
+		mockFileWriter := &service.FileWriter{}
+		mockImageDownloader := &service.ImageDownloader{}
 		tQues := &entity.Question{
 			TitleSlug: "xyz",
 			Content: "<img src=\"https://assets.leetcode.com/uploads/2021/02/18/btree1.jpg\"/>" +

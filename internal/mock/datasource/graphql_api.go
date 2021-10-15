@@ -1,4 +1,4 @@
-package mock
+package datasource
 
 import (
 	"github.com/ISKalsi/leet-scrape/v2/data/model"
