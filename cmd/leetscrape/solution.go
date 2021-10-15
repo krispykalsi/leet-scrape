@@ -16,8 +16,12 @@ var solution = &cli.Command{
 		if err != nil {
 			return exitCli(err)
 		}
+		fileName, err := getFileName(ques, args)
+		if err != nil {
+			return exitCli(err)
+		}
 		fw := service.NewFileWriter()
-		generateFile := usecase.NewGenerateSolutionFile(ques, fw, args.path, args.boilerplate, args.lang)
+		generateFile := usecase.NewGenerateSolutionFile(ques, fw, fileName, args.path, args.boilerplate, args.lang)
 		err = generateFile.Execute()
 		if err != nil {
 			return exitCli(err)

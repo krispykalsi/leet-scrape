@@ -48,3 +48,13 @@ func getQuestion(args *flagArgs) (*entity.Question, error) {
 	}
 	return ques, nil
 }
+
+func getFileName(q *entity.Question, args *flagArgs) (string, error) {
+	if args.url != "" || args.name != "" {
+		return q.TitleSlug, nil
+	} else if args.num != -1 {
+		return q.Id, nil
+	} else {
+		return "", errors.FlagMissing
+	}
+}

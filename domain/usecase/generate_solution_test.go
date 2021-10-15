@@ -12,16 +12,18 @@ import (
 func TestGenerateSolutionFileUseCase(group *testing.T) {
 	testQuestion := &testdata.QuestionWithImg
 	testPath := "testFiles/cpp"
+	testFileName := "two-sum"
 	testBoilerplate := "// this is a test comment\n\n"
 	testLang := "C++"
 
-	group.Run("should return valid constructor", func(t *testing.T) {
+	group.Run("should return valid object from constructor", func(t *testing.T) {
 		mockWriter := &mock.FileWriter{}
-		uc := NewGenerateSolutionFile(testQuestion, mockWriter, testPath, testBoilerplate, testLang)
+		uc := NewGenerateSolutionFile(testQuestion, mockWriter, testFileName, testPath, testBoilerplate, testLang)
 		assert.Equal(t, testQuestion, uc.question)
 		assert.Equal(t, testPath, uc.path)
 		assert.Equal(t, testBoilerplate, uc.boilerplate)
 		assert.Equal(t, testLang, uc.language)
+		assert.Equal(t, testFileName, uc.fileName)
 	})
 
 	group.Run("should prepend boilerplate code to the given code snippet (with newline chars fixed) before writing it to file", func(t *testing.T) {
@@ -39,8 +41,25 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 		}
 		tb := "// sample comment \\n"
 		expectedData := "// sample comment \n<sample\r\n code\n>"
-		mw.On("WriteDataToFile", q.TitleSlug+".cpp", testPath, expectedData).Return(nil)
-		uc := NewGenerateSolutionFile(q, mw, testPath, tb, testLang)
+		mw.On("WriteDataToFile", testFileName+".cpp", testPath, expectedData).Return(nil)
+		uc := NewGenerateSolutionFile(q, mw, testFileName, testPath, tb, testLang)
+		err := uc.Execute()
+		assert.Nil(t, err)
+	})
+
+	group.Run("should write the file with correct filename", func(t *testing.T) {
+		mw := &mock.FileWriter{}
+		q := &entity.Question{
+			CodeSnippets: []entity.CodeSnippet{
+				{
+					testLang,
+					"cpp",
+					"",
+				},
+			},
+		}
+		mw.On("WriteDataToFile", testFileName+".cpp", testPath, "").Return(nil)
+		uc := NewGenerateSolutionFile(q, mw, testFileName, testPath, "", testLang)
 		err := uc.Execute()
 		assert.Nil(t, err)
 	})
@@ -53,7 +72,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 				Content:      "<question description>",
 				CodeSnippets: []entity.CodeSnippet{},
 			}
-			uc := NewGenerateSolutionFile(q, mw, testPath, testBoilerplate, testLang)
+			uc := NewGenerateSolutionFile(q, mw, testFileName, testPath, testBoilerplate, testLang)
 			err := uc.Execute()
 			assert.ErrorIs(t, err, errors.NoCodeSnippetsFound)
 		})
@@ -71,7 +90,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 					},
 				},
 			}
-			uc := NewGenerateSolutionFile(q, mw, testPath, testBoilerplate, q.CodeSnippets[0].Lang)
+			uc := NewGenerateSolutionFile(q, mw, testFileName, testPath, testBoilerplate, q.CodeSnippets[0].Lang)
 			err := uc.Execute()
 			assert.ErrorIs(t, err, errors.ExtensionNotFound)
 		})
@@ -89,7 +108,7 @@ func TestGenerateSolutionFileUseCase(group *testing.T) {
 					},
 				},
 			}
-			uc := NewGenerateSolutionFile(q, mw, testPath, testBoilerplate, testLang)
+			uc := NewGenerateSolutionFile(q, mw, testFileName, testPath, testBoilerplate, testLang)
 			err := uc.Execute()
 			assert.ErrorIs(t, err, errors.SnippetNotFoundInGivenLang)
 		})

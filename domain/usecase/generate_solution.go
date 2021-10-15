@@ -11,15 +11,17 @@ import (
 type GenerateSolutionFile struct {
 	writer      service.FileWriter
 	question    *entity.Question
+	fileName    string
 	path        string
 	boilerplate string
 	language    string
 }
 
-func NewGenerateSolutionFile(q *entity.Question, w service.FileWriter, path string, boilerplate string, lang string) *GenerateSolutionFile {
+func NewGenerateSolutionFile(q *entity.Question, w service.FileWriter, fileName string, path string, boilerplate string, lang string) *GenerateSolutionFile {
 	return &GenerateSolutionFile{
 		writer:      w,
 		question:    q,
+		fileName:    fileName,
 		path:        path,
 		boilerplate: boilerplate,
 		language:    lang,
@@ -40,8 +42,8 @@ func (uc *GenerateSolutionFile) Execute() error {
 			if ext == "" {
 				return errors.ExtensionNotFound
 			}
-			fileName := uc.question.TitleSlug + "." + ext
-			return uc.writer.WriteDataToFile(fileName, uc.path, data)
+			fileNameWithExtension := uc.fileName + "." + ext
+			return uc.writer.WriteDataToFile(fileNameWithExtension, uc.path, data)
 		}
 	}
 	return errors.SnippetNotFoundInGivenLang
