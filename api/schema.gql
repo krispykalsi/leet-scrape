@@ -17,9 +17,20 @@ input QuestionListFilterInput {
     searchKeywords: String
 }
 
+type DailyChallenge {
+    date: String
+    link: String
+    question: QuestionNode
+}
+
+type DailyCodingChallengeV2 {
+    challenges: [DailyChallenge]
+}
+
 type Query {
     question(titleSlug: String!) : QuestionNode
     questionList(categorySlug:String, limit: Int, skip: Int, filters: QuestionListFilterInput) : QuestionList
+    dailyCodingChallengeV2(year: Int, month: Int) : DailyCodingChallengeV2
 }
 
 schema {

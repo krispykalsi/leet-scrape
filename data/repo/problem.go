@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Problem struct {
@@ -76,14 +77,17 @@ func (s *Problem) GetByNumber(num int) (*entity.Question, error) {
 	}
 }
 
-func (s *Problem) GetProblemOfTheDay() (*entity.Question, error) {
-	name, err := s.scrapper.ScrapeNameOfProblemOfTheDay()
+func (s *Problem) GetDailyChallenge() (*entity.Question, error) {
+	year, month, _ := time.Now().Date()
+	response, err := s.graphQLClient.FetchDailyChallengesOfMonth(year, int(month))
 	if err != nil {
 		return nil, err
 	}
-	q, err := s.GetByName(name)
-	if err != nil {
-		return nil, err
+	totalChallenges := len(response.DailyCodingChallengeV2.Challenges)
+	if totalChallenges == 0 {
+		return nil, errors.NoDailyChallenge
+	} else {
+		challengeForToday := response.DailyCodingChallengeV2.Challenges[totalChallenges-1].Question
+		return &challengeForToday, nil
 	}
-	return q, nil
 }

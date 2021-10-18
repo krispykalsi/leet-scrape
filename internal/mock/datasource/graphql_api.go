@@ -22,3 +22,10 @@ func (g *GraphQLApi) FetchByNumber(id string) (*model.QuestionListQuery, error) 
 	r1 := args.Error(1)
 	return r0, r1
 }
+
+func (g *GraphQLApi) FetchDailyChallengesOfMonth(year int, month int) (*model.DailyChallengesQuery, error) {
+	args := g.Called(year, month)
+	r0, _ := args.Get(0).(*model.DailyChallengesQuery)
+	r1 := args.Error(1)
+	return r0, r1
+}

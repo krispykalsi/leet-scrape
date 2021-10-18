@@ -1,0 +1,15 @@
+query($year: Int, $month: Int) {
+    dailyCodingChallengeV2(year: $year, month: $month) {
+        challenges {
+            question {
+                questionFrontendId
+                titleSlug
+                codeSnippets {
+                    lang
+                    langSlug
+                    code
+                }
+            }
+        }
+    }
+}

@@ -48,7 +48,7 @@ func TestGetProblemUseCase(group *testing.T) {
 
 		tt.Run("problem of day", func(t *testing.T) {
 			mockRepo := repo.Problem{}
-			getProblem := NewGetProblemOfTheDay(&mockRepo)
+			getProblem := NewGetDailyChallenge(&mockRepo)
 			assert.Equal(t, "", getProblem.url)
 			assert.Equal(t, 0, getProblem.num)
 			assert.Equal(t, "", getProblem.name)
@@ -91,14 +91,14 @@ func TestGetProblemUseCase(group *testing.T) {
 			mockRepo.AssertExpectations(t)
 		})
 
-		tt.Run("problem of day", func(t *testing.T) {
+		tt.Run("daily challenge", func(t *testing.T) {
 			mockRepo := repo.Problem{}
-			mockRepo.On("GetProblemOfTheDay").Return(&testdata.QuestionWithImg, nil)
-			getProblem := NewGetProblemOfTheDay(&mockRepo)
+			mockRepo.On("GetDailyChallenge").Return(&testdata.QuestionWithImg, nil)
+			getProblem := NewGetDailyChallenge(&mockRepo)
 			actualQuestion, err := getProblem.Execute()
 			assert.Nil(t, err)
 			assert.Equal(t, testQuestion, actualQuestion)
-			mockRepo.AssertCalled(t, "GetProblemOfTheDay")
+			mockRepo.AssertCalled(t, "GetDailyChallenge")
 			mockRepo.AssertExpectations(t)
 		})
 	})

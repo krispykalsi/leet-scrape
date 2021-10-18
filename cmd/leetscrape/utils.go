@@ -42,7 +42,7 @@ func getQuestion(args *flagArgs) (*entity.Question, error) {
 	} else if args.num != -1 {
 		getProblem = usecase.NewGetProblemByNumber(repository, args.num)
 	} else if args.today {
-		getProblem = usecase.NewGetProblemOfTheDay(repository)
+		getProblem = usecase.NewGetDailyChallenge(repository)
 	} else {
 		return nil, errors.FlagMissing
 	}

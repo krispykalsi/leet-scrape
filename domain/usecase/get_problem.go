@@ -47,7 +47,7 @@ func NewGetProblemByUrl(scrapper repo.Problem, url string) *GetProblem {
 	}
 }
 
-func NewGetProblemOfTheDay(scrapper repo.Problem) *GetProblem {
+func NewGetDailyChallenge(scrapper repo.Problem) *GetProblem {
 	return &GetProblem{
 		repo:   scrapper,
 		search: problemOfDay,
@@ -65,7 +65,7 @@ func (uc *GetProblem) Execute() (*entity.Question, error) {
 	case byNumber:
 		question, err = uc.repo.GetByNumber(uc.num)
 	case problemOfDay:
-		question, err = uc.repo.GetProblemOfTheDay()
+		question, err = uc.repo.GetDailyChallenge()
 	default:
 		return nil, errors.InvalidSearchMethod
 	}

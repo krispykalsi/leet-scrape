@@ -10,7 +10,7 @@ const (
 	URL    = "url"
 	NAME   = "name"
 	NUMBER = "number"
-	TODAY  = "daily-problem"
+	TODAY  = "daily-challenge"
 
 	LOCATION = "output-dir"
 
@@ -26,7 +26,7 @@ const CliName = "leetscrape"
 func main() {
 	app := &cli.App{
 		Name:      "Leetcode Scrapper",
-		Version:   "0.1.2",
+		Version:   "0.2.1",
 		Usage:     "Download and create the default empty solution file (with the question statement as docstring at the top) from leetcode.com",
 		UsageText: "leetscrape [global options] command [command options]\n    Examples -\n\t1. " + CliName + " --name \"Two Sum\" solution --lang C++\n\t2. " + CliName + " -N 455 question",
 		Flags: []cli.Flag{

@@ -8,6 +8,7 @@ import (
 	"github.com/ISKalsi/leet-scrape/v2/internal/mock/datasource"
 	"github.com/ISKalsi/leet-scrape/v2/internal/testdata"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"strconv"
 	"testing"
 )
@@ -253,19 +254,59 @@ func TestGetByNumber(group *testing.T) {
 	})
 }
 
-func TestGetProblemOfTheDay(t *testing.T) {
-	testQues, _ := testdata.ImportFromFile("two_sum.json")
-	testQuery := &model.QuestionQuery{
-		Question: testQues,
-	}
-	mockApi := &datasource.GraphQLApi{}
-	mockScrapper := &datasource.WebScrapper{}
-	mockApi.On("FetchBySlug", "two-sum").Return(testQuery, nil)
-	mockScrapper.On("ScrapeNameOfProblemOfTheDay").Return("Two Sum", nil)
-	repository := NewProblem(mockApi, mockScrapper)
+func TestGetProblemOfTheDay(group *testing.T) {
+	anyInt := mock.AnythingOfType("int")
 
-	actualQues, err := repository.GetProblemOfTheDay()
+	group.Run("should return valid valid daily challenge Question", func(t *testing.T) {
+		q0, _ := testdata.ImportFromFile("3sum.json")
+		q1, _ := testdata.ImportFromFile("reverse_integer.json")
+		q2, _ := testdata.ImportFromFile("two_sum.json")
+		testQuery := &model.DailyChallengesQuery{
+			DailyCodingChallengeV2: struct {
+				Challenges []struct {
+					Question entity.Question `json:"question"`
+				} `json:"challenges"`
+			}{
+				Challenges: []struct {
+					Question entity.Question `json:"question"`
+				}{
+					{q0},
+					{q1},
+					{q2},
+				},
+			},
+		}
+		mockApi := &datasource.GraphQLApi{}
+		mockScrapper := &datasource.WebScrapper{}
+		mockApi.On("FetchDailyChallengesOfMonth", anyInt, anyInt).Return(testQuery, nil)
+		repository := NewProblem(mockApi, mockScrapper)
 
-	assert.Nil(t, err)
-	assert.Equal(t, &testQues, actualQues)
+		actualQues, err := repository.GetDailyChallenge()
+
+		assert.Nil(t, err)
+		assert.Equal(t, &q2, actualQues)
+	})
+
+	group.Run("should return NoDailyChallenge error there is no challenge found (possibly due to different timezones", func(t *testing.T) {
+		testQuery := &model.DailyChallengesQuery{
+			DailyCodingChallengeV2: struct {
+				Challenges []struct {
+					Question entity.Question `json:"question"`
+				} `json:"challenges"`
+			}{
+				Challenges: []struct {
+					Question entity.Question `json:"question"`
+				}{},
+			},
+		}
+		mockApi := &datasource.GraphQLApi{}
+		mockScrapper := &datasource.WebScrapper{}
+		mockApi.On("FetchDailyChallengesOfMonth", anyInt, anyInt).Return(testQuery, nil)
+		repository := NewProblem(mockApi, mockScrapper)
+
+		actualQues, err := repository.GetDailyChallenge()
+
+		assert.Nil(t, actualQues)
+		assert.ErrorIs(t, err, internalErr.NoDailyChallenge)
+	})
 }

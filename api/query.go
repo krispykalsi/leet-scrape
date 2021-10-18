@@ -16,6 +16,7 @@ type Query int
 const (
 	Question Query = iota
 	QuestionList
+	DailyChallenges
 )
 
 func GetQuery(part Query) string {
@@ -25,6 +26,8 @@ func GetQuery(part Query) string {
 		queryFileName = "question.gql"
 	case QuestionList:
 		queryFileName = "question_list.gql"
+	case DailyChallenges:
+		queryFileName = "daily_challenges.gql"
 	default:
 		log.Fatal("Invalid part of problem")
 	}

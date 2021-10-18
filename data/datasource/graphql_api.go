@@ -10,6 +10,7 @@ import (
 type GraphQLApi interface {
 	FetchBySlug(titleSlug string) (*model.QuestionQuery, error)
 	FetchByNumber(id string) (*model.QuestionListQuery, error)
+	FetchDailyChallengesOfMonth(year int, month int) (*model.DailyChallengesQuery, error)
 }
 
 type GraphQLApiImpl struct {
@@ -47,6 +48,22 @@ func (g *GraphQLApiImpl) FetchByNumber(id string) (*model.QuestionListQuery, err
 	req.Header.Set("Content-Type", "application/json")
 
 	var response model.QuestionListQuery
+	err := g.client.Run(context.Background(), req, &response)
+	if err != nil {
+		return nil, err
+	} else {
+		return &response, nil
+	}
+}
+
+func (g *GraphQLApiImpl) FetchDailyChallengesOfMonth(year int, month int) (*model.DailyChallengesQuery, error) {
+	query := api.GetQuery(api.DailyChallenges)
+	req := graphql.NewRequest(query)
+	req.Var("year", year)
+	req.Var("month", month)
+	req.Header.Set("Content-Type", "application/json")
+
+	var response model.DailyChallengesQuery
 	err := g.client.Run(context.Background(), req, &response)
 	if err != nil {
 		return nil, err

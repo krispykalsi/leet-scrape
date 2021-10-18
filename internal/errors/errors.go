@@ -7,6 +7,7 @@ const (
 	FileGeneration
 	QuestionNotFound
 	QuestionIdOutOfRange
+	NoDailyChallenge
 	Unexpected
 	NotImplemented
 	NoCodeSnippetsFound
@@ -45,6 +46,8 @@ func (e Error) GetMessage(cli string) string {
 		return "Question not found. Please check the spellings."
 	case QuestionIdOutOfRange:
 		return "Question number is out of range of the given list of questions on Leetcode. Please check what you entered"
+	case NoDailyChallenge:
+		return "No daily challenges exist for the current month. Check back later"
 	case NoCodeSnippetsFound:
 		return "No code snippets found. Are you sure you entered the right command ? (\"" + cli + " sol\" and not \"leetscrape ques\")"
 	case SnippetNotFoundInGivenLang:

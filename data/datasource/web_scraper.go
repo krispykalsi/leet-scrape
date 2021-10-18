@@ -6,7 +6,7 @@ import (
 )
 
 type WebScrapper interface {
-	ScrapeNameOfProblemOfTheDay() (string, error)
+	ScrapeNameOfDailyChallenge() (string, error)
 }
 
 type WebScrapperImpl struct {
@@ -17,6 +17,6 @@ func NewWebScrapperImpl(c *colly.Collector) *WebScrapperImpl {
 	return &WebScrapperImpl{collector: c}
 }
 
-func (ws *WebScrapperImpl) ScrapeNameOfProblemOfTheDay() (string, error) {
+func (ws *WebScrapperImpl) ScrapeNameOfDailyChallenge() (string, error) {
 	return "", errors.NotImplemented
 }
