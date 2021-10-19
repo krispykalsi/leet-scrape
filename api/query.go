@@ -4,11 +4,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 const (
-	queryFilesDirPath = "../api"
-	GraphqlApiUrl     = "https://leetcode.com/graphql/"
+	GraphqlApiUrl = "https://leetcode.com/graphql/"
 )
 
 type Query int
@@ -31,7 +31,8 @@ func GetQuery(part Query) string {
 	default:
 		log.Fatal("Invalid part of problem")
 	}
-	queryBytes, err := os.ReadFile(filepath.Join(queryFilesDirPath, queryFileName))
+	_, pathToFixtures, _, _ := runtime.Caller(0)
+	queryBytes, err := os.ReadFile(filepath.Join(filepath.Dir(pathToFixtures), queryFileName))
 	if err != nil {
 		panic(err)
 	}
