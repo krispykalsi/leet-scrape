@@ -4,6 +4,7 @@ query($year: Int, $month: Int) {
             question {
                 questionFrontendId
                 titleSlug
+                content
                 codeSnippets {
                     lang
                     langSlug
