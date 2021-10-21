@@ -44,7 +44,7 @@ leetscrape --number 58 solution --lang C++
 leetscrape --url "leetcode.com/problems/3sum" solution --lang java
 ```
 
-More details in the [Usage](#🧰-usage) section.
+More details in the [Usage](#-usage) section.
 
 ## ⚙ Installation
 
