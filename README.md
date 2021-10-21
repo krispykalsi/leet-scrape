@@ -75,7 +75,7 @@ This tool provides four ways to find a problem -
 | ---------------- | :-------------------------- | ------------------------------------------------------------ |
 | Name             | `--name` or `-n`            | `leetscrape -n "two sum" sol python`                         |
 | Number           | `--number` or `-N`          | `leetscrape -N 1 sol -l C++`                                 |
-| URL              | `--url` or `-u`             | `leetscrape -u "https://leetcode.com/problems/two-sum/"` ques |
+| URL              | `--url` or `-u`             | `leetscrape -u "https://leetcode.com/problems/two-sum/" ques`|
 | Daily Challenge  | `--daily-challenge` or `-d` | `leetscrape -d ques`                                         |
 
 **Note:** providing one of the four methods is necessary.
